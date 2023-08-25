@@ -7,7 +7,7 @@ import {
   Animated,
 } from 'react-native';
 
-export const SHOW_TOAST_MESSAGE = 'SHOW_TOAST_MESSAGE';
+const SHOW_TOAST_MESSAGE = 'SHOW_TOAST_MESSAGE';
 
 const colors = {
   info: '#0366fc',
