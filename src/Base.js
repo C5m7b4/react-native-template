@@ -6,6 +6,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import DrawerContents from './common/DrawerContents';
 
 import MainPage from './screens/MainPage';
+import Charts from './screens/Charts';
 
 const Drawer = createDrawerNavigator();
 
@@ -16,10 +17,11 @@ const Base = props => {
   return (
     <NavigationContainer>
       <Drawer.Navigator
-        initialRoute="/"
+        initialRoute="/Main"
         backBehavior="history"
         drawerContent={props => <DrawerContents {...props} />}>
         <Drawer.Screen name="Main" component={MainPage} />
+        <Drawer.Screen name="Charts" component={Charts} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
