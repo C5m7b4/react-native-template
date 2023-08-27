@@ -128,3 +128,9 @@ there are 4 stop points that can be configured the same as the line_fill_gradien
 |y1 | [✔] | number | 0 |
 |x2 | [✔] | number | 0 |
 |y2 | [✔] | number | 0 |
+
+## BarChart
+
+This is a simple bar chart
+
+![Line Chart](images/bar_chart_01.png)

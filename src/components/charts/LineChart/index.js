@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {View, Animated, Easing, Dimensions} from 'react-native';
 import styles from './styles';
+import {quickSort} from '../../../helpers';
 import Svg, {
   G,
   Line,
@@ -116,26 +117,6 @@ const LineChart = ({
 
   const animated_path_ref = useRef(null);
   const animated_path_length = useRef(new Animated.Value(0)).current;
-
-  const quickSort = arr => {
-    if (arr.length <= 1) {
-      return arr;
-    }
-
-    let pivot = arr[0];
-    let leftArr = [];
-    let rightArr = [];
-
-    for (let i = 1; i < arr.length; i++) {
-      if (arr[i] < pivot) {
-        leftArr.push(arr[i]);
-      } else {
-        rightArr.push(arr[i]);
-      }
-    }
-
-    return [...quickSort(leftArr), pivot, ...quickSort(rightArr)];
-  };
 
   useEffect(() => {
     const yKeys = data.map(item => item[y_key]);
@@ -487,6 +468,7 @@ const LineChart = ({
 
   const render_line = () => {
     const dPath = getDPath();
+    console.log('linePath', dPath);
     // console.log('pathLength', animated_path_ref?.current.getTotalLength());
     if (animated) {
       return (
