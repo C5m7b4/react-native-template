@@ -8,7 +8,12 @@ import Svg, {
   Path,
   Rect,
   Text as SvgText,
+  Defs,
+  LinearGradient,
+  Stop,
 } from 'react-native-svg';
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const {width: cWidth} = Dimensions.get('window');
 
@@ -26,12 +31,58 @@ const LineChart = ({
   axisFontSize = 12,
   useMinYValue = false,
   curve = false,
+  animated = true,
   lineCircleStroke = '#fff',
   lineCircleStrokeWidth = 2,
   lineCircleFill = 'transparent',
   lineCircleRadius = 5,
   lineStrokeWidth = 2,
   lineStroke = 'blue',
+  lineGradient = true,
+  useBackgroundGradient = true,
+  verticalLines = true,
+  verticalLineOpacity = 0.2,
+  horizontalLines = false,
+  horizontalLineOpacity = 0.2,
+  background_gradient_config = {
+    gradientUnits: 'userSpaceOnUse',
+    x1: 0,
+    y1: 0,
+    x2: 0,
+    y2: containerHeight,
+    stop1: {
+      offset: 0,
+      stopColor: '#46ace8',
+      stopOpacity: 1,
+    },
+    stop2: {
+      offset: 0.5,
+      stopColor: '#3f83ab',
+      stopOpacity: 1,
+    },
+    stop3: {
+      offset: 0.75,
+      stopColor: '#2a6182',
+      stopOpacity: 1,
+    },
+    stop4: {
+      offset: 1,
+      stopColor: '#17374a',
+      stopOpacity: 1,
+    },
+  },
+  line_fill_gradient_config = {
+    stop1: {
+      offset: 0,
+      stopColor: '#cb5dcf',
+      stopOpacity: 0.3,
+    },
+    stop2: {
+      offset: 1,
+      stopColor: '#99469c',
+      stopOpacity: 0.5,
+    },
+  },
   x_axis_label_config = {
     rotation: 0,
     fontSize: 12,
@@ -58,9 +109,13 @@ const LineChart = ({
   },
 }) => {
   const [yAxisLabels, setYAxisLabels] = useState([]);
+  const [pathLength, setPathLength] = useState(0);
   const x_margin = 50;
   const y_margin = 50;
   const padding_from_screenBorder = 20;
+
+  const animated_path_ref = useRef(null);
+  const animated_path_length = useRef(new Animated.Value(0)).current;
 
   const quickSort = arr => {
     if (arr.length <= 1) {
@@ -88,6 +143,30 @@ const LineChart = ({
     setYAxisLabels(yAxisData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
+
+  useEffect(() => {
+    animated_path_length.setValue(0);
+    Animated.timing(animated_path_length, {
+      toValue: pathLength,
+      duration: 1500,
+      useNativeDriver: true,
+      easing: Easing.ease,
+    }).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathLength]);
+
+  const render_background = () => {
+    return (
+      <Rect
+        x={0}
+        y={0}
+        width={containerWidth}
+        height={containerHeight}
+        fill={'url(#gradientback)'}
+        rx={20}
+      />
+    );
+  };
 
   const calculateWidth = () => {
     const chartWidth = containerWidth - x_margin - padding_from_screenBorder;
@@ -186,6 +265,28 @@ const LineChart = ({
     });
   };
 
+  const render_vertical_lines = () => {
+    const {gap_between_ticks} = calculateWidth();
+
+    return data.map((item, index) => {
+      const x = x_margin + gap_between_ticks * index;
+
+      return (
+        <G key={`vertical_lines_${index}`}>
+          <Line
+            x1={x}
+            y1={containerHeight - y_margin}
+            x2={x}
+            y2={y_margin}
+            stroke={axisColor}
+            strokeWidth={axisWidth}
+            opacity={verticalLineOpacity}
+          />
+        </G>
+      );
+    });
+  };
+
   const render_x_axis_labels = () => {
     return data.map((item, index) => {
       const {gap_between_ticks} = calculateWidth();
@@ -223,6 +324,26 @@ const LineChart = ({
             y2={y}
             stroke={axisColor}
             strokeWidth={axisWidth}
+          />
+        </G>
+      );
+    });
+  };
+
+  const render_horizontal_lines = () => {
+    const {gap_between_ticks} = calculateHeight();
+    return data.map((item, index) => {
+      const y = containerHeight - y_margin - gap_between_ticks * index;
+      return (
+        <G key={`horizontal_line_${index}`}>
+          <Line
+            x1={x_margin}
+            y1={y}
+            x2={containerWidth - padding_from_screenBorder}
+            y2={y}
+            stroke={axisColor}
+            strokeWidth={axisWidth}
+            opacity={horizontalLineOpacity}
           />
         </G>
       );
@@ -359,13 +480,39 @@ const LineChart = ({
         }
       }
     });
-    console.log(dPath);
+    // console.log(dPath);
     return dPath;
   };
 
   const render_line = () => {
     const dPath = getDPath();
+    // console.log('pathLength', animated_path_ref?.current.getTotalLength());
+    if (animated) {
+      return (
+        <AnimatedPath
+          ref={animated_path_ref}
+          // onLayout={() =>
+          //   setPathLength(animated_path_ref?.current.getTotalLength())
+          // }
+          d={dPath}
+          strokeWidth={lineStrokeWidth}
+          stroke={lineStroke}
+          strokeDashArray={pathLength}
+          strokeDashoffset={animated_path_length}
+          fill={'transparent'}
+          opacity={1}
+        />
+      );
+    }
     return <Path d={dPath} strokeWidth={lineStrokeWidth} stroke={lineStroke} />;
+  };
+
+  const render_chart_gradient = () => {
+    let dPath = getDPath();
+    dPath += `L ${containerWidth - padding_from_screenBorder}, ${
+      containerHeight - y_margin
+    } L ${x_margin}, ${containerHeight - y_margin} Z`;
+    return <Path d={dPath} fill={'url(#fillShadowGradient)'} strokeWidth={0} />;
   };
 
   return (
@@ -375,12 +522,67 @@ const LineChart = ({
         {height: containerHeight, width: containerWidth},
       ]}>
       <Svg height="100%" width="100%" style={styles.svgStyle}>
+        <Defs>
+          <LinearGradient
+            id="fillShadowGradient"
+            gradientUnits={'userSpaceOnUse'}
+            x1={0}
+            y1={0}
+            x2={0}
+            y2={containerHeight}>
+            <Stop
+              offset={line_fill_gradient_config.stop1.offset}
+              stopColor={line_fill_gradient_config.stop1.stopColor}
+              stopOpacity={line_fill_gradient_config.stop1.stopOpacity}
+            />
+            <Stop
+              offset={line_fill_gradient_config.stop2.offset}
+              stopColor={line_fill_gradient_config.stop2.stopColor}
+              stopOpacity={line_fill_gradient_config.stop2.stopOpacity}
+            />
+          </LinearGradient>
+          {useBackgroundGradient ? (
+            <LinearGradient
+              id="gradientback"
+              gradientUnits={background_gradient_config.gradientUnits}
+              x1={background_gradient_config.x1}
+              y1={background_gradient_config.y1}
+              x2={background_gradient_config.x2}
+              y2={background_gradient_config.y2}>
+              <Stop
+                offset={background_gradient_config.stop2.offset}
+                stopColor={background_gradient_config.stop2.stopColor}
+                stopOpacity={background_gradient_config.stop2.stopOpacity}
+              />
+              <Stop
+                offset={background_gradient_config.stop3.offset}
+                stopColor={background_gradient_config.stop3.stopColor}
+                stopOpacity={background_gradient_config.stop3.stopOpacity}
+              />
+              <Stop
+                offset={background_gradient_config.stop4.offset}
+                stopColor={background_gradient_config.stop4.stopColor}
+                stopOpacity={background_gradient_config.stop4.stopOpacity}
+              />
+              <Stop
+                offset={background_gradient_config.stop1.offset}
+                stopColor={background_gradient_config.stop1.stopColor}
+                stopOpacity={background_gradient_config.stop1.stopOpacity}
+              />
+            </LinearGradient>
+          ) : null}
+        </Defs>
+        {render_background()}
+        {lineGradient && render_chart_gradient()}
+        {verticalLines && render_vertical_lines()}
+        {horizontalLines && render_horizontal_lines()}
         {render_x_axis()}
         {render_y_axis()}
         {render_x_axis_ticks()}
         {render_x_axis_labels()}
         {render_y_axis_ticks()}
         {render_y_axis_labels()}
+
         {render_line()}
         {render_line_circles()}
       </Svg>
