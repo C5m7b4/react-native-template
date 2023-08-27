@@ -28,7 +28,7 @@ const LineChart = ({
   axisColor = '#fff',
   axisCircleColor = '#fff',
   axisCircleRadius = 5,
-  axisFontSize = 12,
+  // axisFontSize = 12,
   useMinYValue = false,
   curve = false,
   animated = true,
@@ -290,10 +290,11 @@ const LineChart = ({
   const render_x_axis_labels = () => {
     return data.map((item, index) => {
       const {gap_between_ticks} = calculateWidth();
-      const x = x_margin + gap_between_ticks * index;
-      const y = containerHeight - y_margin + 10 + axisFontSize;
       const {rotation, fontSize, fontColor, textAnchor, fontWeight} =
         x_axis_label_config;
+      const x = x_margin + gap_between_ticks * index;
+      const y = containerHeight - y_margin + 10 + fontSize;
+
       return (
         <SvgText
           key={`x-axis-label-${index}`}

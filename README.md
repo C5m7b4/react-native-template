@@ -43,6 +43,7 @@ This is a simple line chart currently only capable of handling a single line. He
 
 ![Line Chart](images/line_chart_02.png)
 ![Line Chart](images/line_chart_03.png)
+![Line Chart](images/line_chart_04.png)
 
 ### Props
 
@@ -66,6 +67,13 @@ This is a simple line chart currently only capable of handling a single line. He
 |lineCircleRadius | [✔] | number | radius of chart line circles | 5 |
 |lineStrokeWidth | [✔] | number | thickneess of chart line | 5 |
 |lineStroke | [✔] | color | color of chart line | 'blue' |
+|lineGradient | [✔] | boolean | use gradient overlay under line chart | false |
+|useBackgroundGradient | [✔] | boolean | use Background gradient for svg chart | false |
+|verticalLines | [✔] | boolean | show Vertical lines | false |
+|verticalLineOpacity | [✔] | number | opacity of vertical lines | 0.2 |
+|horizontalLines | [✔] | boolean | show Horizontal lines | false |
+|horizontalLineOpacity | [✔] | number | opacity of horizontal lines | 0.2 |
+|tooltipVisible | [✔]  | boolean | show tooltips on chart | false |
 
 ### x_axis_label_config Props
 
@@ -76,3 +84,47 @@ This is a simple line chart currently only capable of handling a single line. He
 |fontColor |  [✔] | color | color of labels | '#fff' |
 |textAnchor |  [✔] | string | anchor property of label | 'middle' |
 |fontWeight |  [✔] | string | font weight of label | '400' |
+
+### y_axis_label_config Props
+
+|    Prop name | optional | type | description | default |
+| :----------: | :------: | :--: | :---------: | :---: |
+|rotation |  [✔] | number | degrees of rotation for labels | 0 |
+|fontSize |  [✔] | number | font size of labels | 15 |
+|fontColor |  [✔] | color | color of labels | '#fff' |
+|textAnchor |  [✔] | string | anchor property of label | 'middle' |
+|fontWeight |  [✔] | string | font weight of label | '400' |
+
+### tooltip_config Props
+
+|    Prop name | optional | type | description | default |
+| :----------: | :------: | :--: | :---------: | :---: |
+|tooltipHeight | [✔] | number | height of tooltips | 20 |
+|tooltipWidth | [✔] | number | width of tooltips | 40 |
+|tooltipFill | [✔] | color | background of tooltip | '#fff' |
+|tooltipBorderRadius | [✔] | number | border radius of tooltips | 7 |
+|fontSize | [✔] | number | fontSize for tooltip text | 12 |
+|fontWeight | [✔] | string | font weight for tooltip text | '400' |
+|textAnchor | [✔] | string | anchor point for text | 'middle' |
+
+### line_fill_gradient_config Props
+
+this config only has 2 props (stop1, stop2)
+
+|    Prop name | optional | type | description | default |
+| :----------: | :------: | :--: | :---------: | :---: |
+|offset | [✔] | number | gradient offset | 0 |
+|stopColor | [✔] | color | color for gradient point | |
+|stopOpacity | [✔] | number | opacity for the gradient stop | |
+
+### background_gradient_config Props
+
+there are 4 stop points that can be configured the same as the line_fill_gradient_config stops
+
+|    Prop name | optional | type | description | default |
+| :----------: | :------: | :--: | :---------: | :---: |
+|gradientUnits | [✔] | string | 'useSpaceOnUse' |
+|x1 | [✔] | number | 0 |
+|y1 | [✔] | number | 0 |
+|x2 | [✔] | number | 0 |
+|y2 | [✔] | number | 0 |
